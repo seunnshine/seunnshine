@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>恩地應援合集</title>
+<style>
+:root{--bg:#fff7f8;--surface:#ffffff;--ink:#3a2a30;--muted:#8a7078;--pink:#f06a8e;--pink-soft:#fde3ea;--line:#f3cdd7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1418;--surface:#2a1c22;--ink:#f6e6ea;--muted:#b99aa4;--pink:#ff86a6;--pink-soft:#3d2430;--line:#4d3039}}
+:root[data-theme="dark"]{--bg:#1d1418;--surface:#2a1c22;--ink:#f6e6ea;--muted:#b99aa4;--pink:#ff86a6;--pink-soft:#3d2430;--line:#4d3039}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;line-height:1.75}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:5}
+.bar{max-width:960px;margin:0 auto;padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.logo{font-size:1.25rem;font-weight:700;letter-spacing:.12em;color:var(--pink);text-decoration:none}
+nav{display:flex;gap:8px}
+nav a{padding:6px 16px;border-radius:999px;color:var(--ink);text-decoration:none;border:1px solid var(--line);font-size:.95rem}
+nav a:hover{background:var(--pink-soft)}
+nav a.on{background:var(--pink);border-color:var(--pink);color:#fff}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+main{max-width:960px;margin:0 auto;padding:28px 20px 64px}
+.view{display:none}.view.on{display:block}
+h1{font-size:clamp(2rem,6vw,3.2rem);margin:.2em 0 .1em;letter-spacing:.1em}
+h2{font-size:1.6rem;margin:0 0 .3em}
+.sub{color:var(--muted);margin:0 0 24px}
+.btn{background:var(--pink);color:#fff;border:0;border-radius:10px;padding:10px 20px;font:inherit;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pink);border:1px solid var(--pink)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:22px}
+.ph{position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--pink-soft)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button{position:absolute;top:8px;right:8px;border:0;border-radius:50%;width:30px;height:30px;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:16px}
+.empty{border:2px dashed var(--line);border-radius:16px;padding:48px 20px;text-align:center;color:var(--muted)}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.entry h3{margin:0 0 4px;font-size:1.15rem}
+.entry p{margin:0;white-space:pre-wrap}
+.entry .del{float:right;background:none;border:0;color:var(--muted);cursor:pointer;font:inherit}
+form.add{display:grid;gap:10px;background:var(--pink-soft);padding:16px;border-radius:14px;margin-bottom:24px}
+input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:90px;resize:vertical}
+dl{display:grid;grid-template-columns:7em 1fr;gap:10px 16px;margin:0 0 24px}
+dt{color:var(--pink);font-weight:700}dd{margin:0}
+[contenteditable="true"]{outline:2px dashed var(--pink);outline-offset:4px;border-radius:6px}
+.tip{color:var(--muted);font-size:.88rem;margin-top:14px}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<a class="logo" href="#home">恩地應援合集</a>
+<nav aria-label="主選單">
+<a href="#home" data-v="home">首頁</a>
+<a href="#setlist" data-v="setlist">演唱會曲目應援</a>
+<a href="#intro" data-v="intro">恩地自我介紹</a>
+</nav></div></header>
+
+<main>
+<section class="view" id="v-home">
+<h1>恩地應援合集</h1>
+<p class="sub">先把喜歡的照片放上來，再從上方選單進入各個區塊。</p>
+<input type="file" id="file" accept="image/*" multiple hidden>
+<button class="btn" id="pick">上傳照片</button>
+<div id="gallery" class="gallery"></div>
+</section>
+
+<section class="view" id="v-setlist">
+<h2>演唱會曲目應援</h2>
+<p class="sub">新增每首歌的應援方式，演唱會當天直接照著看。</p>
+<form class="add" id="songForm">
+<input id="songName" placeholder="歌名" required>
+<textarea id="songCheer" placeholder="應援內容（口號、燈海、手勢、喊 call 時機…）"></textarea>
+<button class="btn" type="submit">加入曲目</button>
+</form>
+<div id="songs"></div>
+</section>
+
+<section class="view" id="v-intro">
+<h2>恩地自我介紹</h2>
+<p class="sub">點「編輯內容」可以改成你想寫的版本。</p>
+<div id="introBody">
+<dl>
+<dt>名字</dt><dd>鄭恩地（정은지，Jung Eun-ji）</dd>
+<dt>團體</dt><dd>Apink，隊內成員與主唱之一</dd>
+<dt>生日</dt><dd>1993 年 8 月 18 日</dd>
+<dt>身分</dt><dd>歌手、演員</dd>
+<dt>代表作</dt><dd>電視劇《請回答 1997》、Apink 多張專輯與個人 solo 作品</dd>
+</dl>
+<p>想寫給恩地的話：在這裡寫下你喜歡恩地的原因、第一次認識她的契機，或最難忘的舞台。</p>
+</div>
+<button class="btn ghost" id="editBtn">編輯內容</button>
+<p class="tip">以上基本資料為簡要整理，可自行修正補充。</p>
+</section>
+<p class="tip" id="note"></p>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+};
+/* 導覽 */
+function route(){
+  const h=(location.hash||'#home').slice(1);
+  const v=['home','setlist','intro'].includes(h)?h:'home';
+  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  scrollTo(0,0);
+}
+addEventListener('hashchange',route);route();
+
+/* 照片 */
+let photos=store.get('eunji-photos',[]);
+function renderPhotos(){
+  const g=$('#gallery');g.innerHTML='';
+  if(!photos.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">還沒有照片，點「上傳照片」開始放入。</div>';return}
+  photos.forEach((src,i)=>{
+    const d=document.createElement('div');d.className='ph';
+    d.innerHTML='<img alt="恩地照片 '+(i+1)+'"><button aria-label="刪除照片">×</button>';
+    d.querySelector('img').src=src;
+    d.querySelector('button').onclick=()=>{photos.splice(i,1);savePhotos();renderPhotos()};
+    g.appendChild(d);
+  });
+}
+function savePhotos(){
+  if(!store.set('eunji-photos',photos))$('#note').textContent='照片太多，瀏覽器無法再保存；重新整理後可能會消失。';
+}
+function shrink(file){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{const im=new Image();im.onload=()=>{
+      const s=Math.min(1,700/Math.max(im.width,im.height));
+      const c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',.8))};im.src=r.result};
+    r.readAsDataURL(file);
+  });
+}
+$('#pick').onclick=()=>$('#file').click();
+$('#file').onchange=async e=>{
+  for(const f of e.target.files)photos.push(await shrink(f));
+  e.target.value='';savePhotos();renderPhotos();
+};
+renderPhotos();
+
+/* 曲目應援 */
+let songs=store.get('eunji-songs',[]);
+function renderSongs(){
+  const box=$('#songs');box.innerHTML='';
+  if(!songs.length){box.innerHTML='<div class="empty">還沒有曲目，在上方輸入歌名和應援內容。</div>';return}
+  songs.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='entry';
+    const b=document.createElement('button');b.className='del';b.textContent='刪除';
+    b.onclick=()=>{songs.splice(i,1);store.set('eunji-songs',songs);renderSongs()};
+    const h=document.createElement('h3');h.textContent=s.name;
+    const p=document.createElement('p');p.textContent=s.cheer||'（尚未填寫應援內容）';
+    d.append(b,h,p);box.appendChild(d);
+  });
+}
+$('#songForm').onsubmit=e=>{
+  e.preventDefault();
+  songs.push({name:$('#songName').value.trim(),cheer:$('#songCheer').value.trim()});
+  store.set('eunji-songs',songs);e.target.reset();renderSongs();
+};
+renderSongs();
+
+/* 自我介紹 */
+const body=$('#introBody');
+const savedIntro=store.get('eunji-intro',null);
+if(savedIntro)body.innerHTML=savedIntro;
+$('#editBtn').onclick=()=>{
+  const on=body.isContentEditable;
+  body.contentEditable=on?'false':'true';
+  $('#editBtn').textContent=on?'編輯內容':'儲存內容';
+  if(on)store.set('eunji-intro',body.innerHTML);
+};
+</script>
+</body>
+</html>
